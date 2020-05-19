@@ -15,6 +15,10 @@
 		92E92F412473253A00762F49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 92E92F402473253A00762F49 /* Assets.xcassets */; };
 		92E92F442473253A00762F49 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92E92F422473253A00762F49 /* LaunchScreen.storyboard */; };
 		92E92F472473253B00762F49 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92F462473253B00762F49 /* main.m */; };
+		92E92F4C24735A5400762F49 /* imsealeventdelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 92E92F4B24735A5400762F49 /* imsealeventdelegate.h */; };
+		92E92F4E24735A7000762F49 /* imseal.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92F4D24735A7000762F49 /* imseal.m */; };
+		92E92F5124735AF200762F49 /* IMSEAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 92E92F4F24735AF200762F49 /* IMSEAL.h */; };
+		92E92F5224735AF200762F49 /* IMSEAL.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92F5024735AF200762F49 /* IMSEAL.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +37,10 @@
 		92E92F432473253A00762F49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		92E92F452473253B00762F49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		92E92F462473253B00762F49 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		92E92F4B24735A5400762F49 /* imsealeventdelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = imsealeventdelegate.h; sourceTree = "<group>"; };
+		92E92F4D24735A7000762F49 /* imseal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = imseal.m; sourceTree = "<group>"; };
+		92E92F4F24735AF200762F49 /* IMSEAL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IMSEAL.h; sourceTree = "<group>"; };
+		92E92F5024735AF200762F49 /* IMSEAL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IMSEAL.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +84,10 @@
 			children = (
 				92E92F262473251400762F49 /* imseal_ios.h */,
 				92E92F272473251400762F49 /* Info.plist */,
+				92E92F4B24735A5400762F49 /* imsealeventdelegate.h */,
+				92E92F4D24735A7000762F49 /* imseal.m */,
+				92E92F4F24735AF200762F49 /* IMSEAL.h */,
+				92E92F5024735AF200762F49 /* IMSEAL.m */,
 			);
 			path = "imseal-ios";
 			sourceTree = "<group>";
@@ -106,6 +118,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				92E92F282473251400762F49 /* imseal_ios.h in Headers */,
+				92E92F4C24735A5400762F49 /* imsealeventdelegate.h in Headers */,
+				92E92F5124735AF200762F49 /* IMSEAL.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,6 +222,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92E92F5224735AF200762F49 /* IMSEAL.m in Sources */,
+				92E92F4E24735A7000762F49 /* imseal.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
