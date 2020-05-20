@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "IMSEAL.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController<IMSEALEventDelegate>
 
+@property (nonatomic, strong) IMSEAL *imseal;
 
 @end
 

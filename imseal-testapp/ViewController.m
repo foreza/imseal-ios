@@ -16,8 +16,38 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    self.imseal = [[IMSEAL alloc] initWithUID: @"someUIDiOS" forDelegate: self];
+    
 }
+
+
+- (void)IMSEALinitSDKFailWithError:(nonnull NSError *)err { 
+    NSLog(@"IMSEALinitSDKFailWithError %@", err.description);
+}
+
+- (void)IMSEALinitSDKSuccess {
+    NSLog(@"IMSEALinitSDKSuccess");
+
+    [self.imseal recordAdRequest];
+}
+
+- (void)IMSEALstartEventLogFail {
+    NSLog(@"IMSEALstartEventLogFail");
+}
+
+- (void)IMSEALstartEventLogSuccess {
+    NSLog(@"IMSEALstartEventLogSuccess");
+    [self.imseal recordAdLoaded];
+}
+
+- (void)IMSEALrecordEventLogFail {
+    NSLog(@"IMSEALrecordEventLogFail");
+}
+
+- (void)IMSEALrecordEventLogSuccess {
+    NSLog(@"IMSEALrecordEventLogSuccess");
+}
+
 
 
 @end

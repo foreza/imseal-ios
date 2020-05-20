@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		92CDB1FF2475DCDE006E7401 /* imseal_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92E92F232473251400762F49 /* imseal_ios.framework */; };
 		92E92F282473251400762F49 /* imseal_ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 92E92F262473251400762F49 /* imseal_ios.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		92E92F362473253900762F49 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92F352473253900762F49 /* AppDelegate.m */; };
 		92E92F392473253900762F49 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92F382473253900762F49 /* SceneDelegate.m */; };
@@ -15,11 +16,20 @@
 		92E92F412473253A00762F49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 92E92F402473253A00762F49 /* Assets.xcassets */; };
 		92E92F442473253A00762F49 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92E92F422473253A00762F49 /* LaunchScreen.storyboard */; };
 		92E92F472473253B00762F49 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92F462473253B00762F49 /* main.m */; };
-		92E92F4C24735A5400762F49 /* imsealeventdelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 92E92F4B24735A5400762F49 /* imsealeventdelegate.h */; };
-		92E92F4E24735A7000762F49 /* imseal.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92F4D24735A7000762F49 /* imseal.m */; };
+		92E92F4C24735A5400762F49 /* IMSEALEventDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 92E92F4B24735A5400762F49 /* IMSEALEventDelegate.h */; };
 		92E92F5124735AF200762F49 /* IMSEAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 92E92F4F24735AF200762F49 /* IMSEAL.h */; };
 		92E92F5224735AF200762F49 /* IMSEAL.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92F5024735AF200762F49 /* IMSEAL.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		92CDB2012475DCDE006E7401 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 92E92F1A2473251300762F49 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 92E92F222473251400762F49;
+			remoteInfo = "imseal-ios";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		92E92F232473251400762F49 /* imseal_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = imseal_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -37,8 +47,7 @@
 		92E92F432473253A00762F49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		92E92F452473253B00762F49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		92E92F462473253B00762F49 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		92E92F4B24735A5400762F49 /* imsealeventdelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = imsealeventdelegate.h; sourceTree = "<group>"; };
-		92E92F4D24735A7000762F49 /* imseal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = imseal.m; sourceTree = "<group>"; };
+		92E92F4B24735A5400762F49 /* IMSEALEventDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IMSEALEventDelegate.h; sourceTree = "<group>"; };
 		92E92F4F24735AF200762F49 /* IMSEAL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IMSEAL.h; sourceTree = "<group>"; };
 		92E92F5024735AF200762F49 /* IMSEAL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IMSEAL.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -55,18 +64,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92CDB1FF2475DCDE006E7401 /* imseal_ios.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		92CDB1FE2475DCDE006E7401 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		92E92F192473251300762F49 = {
 			isa = PBXGroup;
 			children = (
 				92E92F252473251400762F49 /* imseal-ios */,
 				92E92F332473253900762F49 /* imseal-testapp */,
 				92E92F242473251400762F49 /* Products */,
+				92CDB1FE2475DCDE006E7401 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -84,8 +102,7 @@
 			children = (
 				92E92F262473251400762F49 /* imseal_ios.h */,
 				92E92F272473251400762F49 /* Info.plist */,
-				92E92F4B24735A5400762F49 /* imsealeventdelegate.h */,
-				92E92F4D24735A7000762F49 /* imseal.m */,
+				92E92F4B24735A5400762F49 /* IMSEALEventDelegate.h */,
 				92E92F4F24735AF200762F49 /* IMSEAL.h */,
 				92E92F5024735AF200762F49 /* IMSEAL.m */,
 			);
@@ -118,7 +135,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92E92F282473251400762F49 /* imseal_ios.h in Headers */,
-				92E92F4C24735A5400762F49 /* imsealeventdelegate.h in Headers */,
+				92E92F4C24735A5400762F49 /* IMSEALEventDelegate.h in Headers */,
 				92E92F5124735AF200762F49 /* IMSEAL.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -155,6 +172,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				92CDB2022475DCDE006E7401 /* PBXTargetDependency */,
 			);
 			name = "imseal-testapp";
 			productName = "imseal-testapp";
@@ -223,7 +241,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				92E92F5224735AF200762F49 /* IMSEAL.m in Sources */,
-				92E92F4E24735A7000762F49 /* imseal.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +256,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		92CDB2022475DCDE006E7401 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 92E92F222473251400762F49 /* imseal-ios */;
+			targetProxy = 92CDB2012475DCDE006E7401 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		92E92F3D2473253900762F49 /* Main.storyboard */ = {

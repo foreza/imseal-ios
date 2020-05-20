@@ -16,5 +16,5 @@ FOUNDATION_EXPORT const unsigned char imseal_iosVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <imseal_ios/PublicHeader.h>
 
- #import <IMSEAL.h>
+ #import <imseal_ios/IMSEAL.h>
 
