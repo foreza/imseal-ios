@@ -19,8 +19,8 @@
           self.delegate = delegate;
           self.uid = uid;
           self._isInitialized = YES;
-          self._sessionId = 1;
-          self._currentEventId = 1;
+          self._sessionId = -1;
+          self._currentEventId = -1;
           
           // DO some stuff, make some network calls...
           [self initializeLocalParamsObject];
@@ -40,12 +40,7 @@
 
 - (void)recordAdRequest {
     
-    [self debugLog:@"Ad request recorded"];
-
-    
-    if ([self.delegate respondsToSelector:@selector(IMSEALstartEventLogSuccess)]){
-        [self.delegate IMSEALstartEventLogSuccess];
-    }
+    [self logNewEventToEventAPI];
 }
 
 - (void)recordAdLoaded {
@@ -107,6 +102,11 @@
         NSDictionary *results = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
              if(error == nil){
                  [self debugLog:[NSString stringWithFormat:@"return data is %@", results]];
+                 
+                 // Set the session ID for the remainder of the active session
+                 self._sessionId = (int)[[results objectForKey:@"id"] integerValue];
+                 
+                 [self debugLog:[NSString stringWithFormat:@"return data is %@", results]];
                 
                 if ([self.delegate respondsToSelector:@selector(IMSEALinitSDKSuccess)]){
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -146,7 +146,7 @@
             [self.localParams setValue: [results objectForKey:@"completed_requests"] forKey:@"completed_requests"];
 
     
-            [self postSessionWithData:self.localParams];
+            [self postSessionWithData:self.localParams]; // Call Session API to get session ID
                 
             
             } else {
@@ -160,6 +160,57 @@
 
 
 
+#pragma mark - Event API calls
+
+- (void) logNewEventToEventAPI {
+    
+    // Configure dictionary for sending data.
+    NSDictionary *eventDict = [[NSDictionary alloc] initWithObjectsAndKeys:
+                               [NSString stringWithFormat:@"%d", self._sessionId] ,@"session_id",           // Session ID
+                               [self getCurrentDateString], @"timestamp",                   // TimeStamp
+                               nil];
+    
+    NSURLSessionConfiguration *defaultSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration:defaultSessionConfiguration];
+
+    
+    // Setup the request with URL
+    NSURL *url = [NSURL URLWithString: kSEALAPIEVENTURL];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:eventDict options:0 error:nil];
+
+    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setHTTPMethod:@"POST"];
+    [urlRequest setHTTPBody:jsonData];
+      
+    NSURLSessionDataTask *dataTask = [defaultSession dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSDictionary *results = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+               if(error == nil){
+                   [self debugLog:[NSString stringWithFormat:@"return data is %@", results]];
+                
+                   self._currentEventId = (int)[[results objectForKey:@"event_id"] integerValue];
+                   [self debugLog:[NSString stringWithFormat:@"new ad request with event id %d", self._currentEventId]];
+
+                   if ([self.delegate respondsToSelector:@selector(IMSEALstartEventLogSuccess)]){
+                       [self.delegate IMSEALstartEventLogSuccess];
+                   }
+                   
+                   
+               } else {
+                   
+                   // On fail, set the event id to -1
+                   self._currentEventId = kDEFAULT_CURRENT_EVENT_ID;
+                   [self.delegate IMSEALstartEventLogFail];     // TODO: Add error handling here
+                   
+                   
+               }
+        }];
+
+      [dataTask resume];
+
+    
+}
+
 
 
 - (void)debugLog:(NSString *) string {
@@ -167,6 +218,9 @@
     NSLog(logTag, string);
 }
 
+- (NSString *) getCurrentDateString {
+    return [NSString stringWithFormat: @"%lld", (long long)([[NSDate date] timeIntervalSince1970] * 1000.0)];
+}
 
 
 @end
