@@ -16,7 +16,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.imseal = [[IMSEAL alloc] initWithUID: @"someUIDiOS" forDelegate: self];
+    self.imseal = [[IMSEAL alloc] initWithUID: @"hello hello" forDelegate: self];
     
 }
 
