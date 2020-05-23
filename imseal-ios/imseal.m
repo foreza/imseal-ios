@@ -44,10 +44,8 @@
 }
 
 - (void)recordAdLoaded {
-    if ([self.delegate respondsToSelector:@selector(IMSEALrecordEventLogSuccess)]){
-        [self.delegate IMSEALrecordEventLogSuccess];
-    }
-    [self debugLog:@"Ad loaded recorded"];
+    
+    [self logAdEventLoadedToEventAPI];
 }
 
 - (void)recordAdNoFill{
@@ -164,6 +162,11 @@
 
 - (void) logNewEventToEventAPI {
     
+     if (!self._isInitialized){
+    //        [self helper_logInitFailReason];
+            return;
+        }
+    
     // Configure dictionary for sending data.
     NSDictionary *eventDict = [[NSDictionary alloc] initWithObjectsAndKeys:
                                [NSString stringWithFormat:@"%d", self._sessionId] ,@"session_id",           // Session ID
@@ -200,14 +203,89 @@
                    
                    // On fail, set the event id to -1
                    self._currentEventId = kDEFAULT_CURRENT_EVENT_ID;
-                   [self.delegate IMSEALstartEventLogFail];     // TODO: Add error handling here
+                   
+                   if ([self.delegate respondsToSelector:@selector(IMSEALstartEventLogFail)]){
+                       [self.delegate IMSEALstartEventLogFail];     // TODO: Add error handling here
+                   }
+                   
+                   
                    
                    
                }
         }];
 
       [dataTask resume];
+    
+}
 
+
+
+#pragma mark - Event API calls
+
+- (void) logAdEventLoadedToEventAPI {
+    
+    if (!self._isInitialized){
+//        [self helper_logInitFailReason];
+        return;
+    }
+
+//    if (!util_checkForExistingEventID()) {
+//        [self helper_logPostEventFailureToListener];
+//        return;
+//    }
+
+    
+
+    // Configure dictionary for sending data.
+    NSDictionary *adLoadEventDict = [[NSDictionary alloc] initWithObjectsAndKeys:
+                               [NSString stringWithFormat:@"%d", self._currentEventId] ,@"session_id",          // Event ID
+                               [NSNumber numberWithInt:1], @"type",                                             // Event type
+                               [self getCurrentDateString], @"timestamp",                                       // TimeStamp
+                               nil];
+    
+    NSURLSessionConfiguration *defaultSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration:defaultSessionConfiguration];
+
+    
+    // Setup the request with URL
+    NSString *remote = [NSString stringWithFormat:@"%@%@%d", kSEALAPIEVENTURL, @"/", self._currentEventId];
+    NSURL *url = [NSURL URLWithString: remote];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:adLoadEventDict options:0 error:nil];
+
+    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setHTTPMethod:@"POST"];
+    [urlRequest setHTTPBody:jsonData];
+      
+    NSURLSessionDataTask *dataTask = [defaultSession dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+            NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
+        
+        // If the request was successful (payload is not returned from remote)
+        if ([httpResponse statusCode] == 200){
+            [self debugLog:[NSString stringWithFormat:@"logAdEventLoadedToEventAPI: %d", self._currentEventId]];
+
+                if ([self.delegate respondsToSelector:@selector(IMSEALrecordEventLogSuccess)]){
+                    [self.delegate IMSEALrecordEventLogSuccess];
+                }
+                
+        } else {
+                   // On fail, set the event id to -1
+                   self._currentEventId = kDEFAULT_CURRENT_EVENT_ID;
+                   
+                   // TODO: Add error handling here
+                   
+                   if ([self.delegate respondsToSelector:@selector(IMSEALrecordEventLogFail)]){
+                       [self.delegate IMSEALrecordEventLogFail];
+                   }
+                   
+                   
+                   
+               }
+        }];
+
+      [dataTask resume];
     
 }
 

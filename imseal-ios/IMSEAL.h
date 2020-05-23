@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 #define logTag @"[IMSEAL]%@"
 #define kSEALAPISESSIONURL @"http://127.0.0.1:3000/sessions"
 #define kSEALAPIEVENTURL @"http://127.0.0.1:3000/events"
-
 #define kDEFAULT_CURRENT_EVENT_ID -1
 #define kERROR_HIGHLIGHT @"********************************************************************************"
 #define kERROR_REASON_AD_REQUEST_NOT_MADE  "Did you try beginning an ad request with recordAdRequest()?"
