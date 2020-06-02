@@ -34,29 +34,24 @@
 
 
 - (BOOL)isInitialized {
-    
     return self.isInitialized;
 }
 
 - (void)recordAdRequest {
-    
     [self logNewEventToEventAPI];
 }
 
 - (void)recordAdLoaded {
-    
     [self logAdEventLoadedToEventAPI];
 }
 
-- (void)recordAdNoFill{
-    if ([self.delegate respondsToSelector:@selector(IMSEALrecordEventLogSuccess)]){
-        [self.delegate IMSEALrecordEventLogSuccess];
-    }
-    [self debugLog:@"Ad no fill recorded"];
+- (void)recordAdNoFill {
+    [self logAdEventNoFillToEventAPI];
 }
 
 
 # pragma mark - Private methods:
+
 
 
 #pragma mark - Session Setup and Init
@@ -123,11 +118,15 @@
 
 #pragma mark - Location API call
 
+
+
 - (void) doConfigNetworkCallToLocationAPI {
 
     NSURLSessionConfiguration *defaultSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration:defaultSessionConfiguration];
     NSURL *url = [NSURL URLWithString:@"http://free.ipwhois.io/json/"];
+    
+    
     NSURLSessionDataTask *dataTask = [defaultSession dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError * error) {
         
         NSDictionary *results = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
@@ -172,55 +171,35 @@
                                [NSString stringWithFormat:@"%d", self._sessionId] ,@"session_id",           // Session ID
                                [self getCurrentDateString], @"timestamp",                   // TimeStamp
                                nil];
-    
-    NSURLSessionConfiguration *defaultSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration:defaultSessionConfiguration];
-
-    
+        
     // Setup the request with URL
     NSURL *url = [NSURL URLWithString: kSEALAPIEVENTURL];
-    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:eventDict options:0 error:nil];
 
-    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setHTTPMethod:@"POST"];
-    [urlRequest setHTTPBody:jsonData];
-      
-    NSURLSessionDataTask *dataTask = [defaultSession dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSDictionary *results = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-               if(error == nil){
-                   [self debugLog:[NSString stringWithFormat:@"return data is %@", results]];
-                
-                   self._currentEventId = (int)[[results objectForKey:@"event_id"] integerValue];
-                   [self debugLog:[NSString stringWithFormat:@"new ad request with event id %d", self._currentEventId]];
-
-                   if ([self.delegate respondsToSelector:@selector(IMSEALstartEventLogSuccess)]){
-                       [self.delegate IMSEALstartEventLogSuccess];
-                   }
-                   
-                   
-               } else {
-                   
-                   // On fail, set the event id to -1
-                   self._currentEventId = kDEFAULT_CURRENT_EVENT_ID;
-                   
-                   if ([self.delegate respondsToSelector:@selector(IMSEALstartEventLogFail)]){
-                       [self.delegate IMSEALstartEventLogFail];     // TODO: Add error handling here
-                   }
-                   
-                   
-                   
-                   
-               }
-        }];
-
-      [dataTask resume];
     
+    void (^newAdEventCompletion)(NSData*, NSURLResponse*, NSError*) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+           if(error == nil){
+               [self debugLog:[NSString stringWithFormat:@"return data is %@", results]];
+               self._currentEventId = (int)[[results objectForKey:@"event_id"] integerValue];
+               [self debugLog:[NSString stringWithFormat:@"new ad request with event id %d", self._currentEventId]];
+               if ([self.delegate respondsToSelector:@selector(IMSEALstartEventLogSuccess)]){
+                   [self.delegate IMSEALstartEventLogSuccess];
+               }
+               // TODO: Handle case where selector is not found
+           } else {
+               // On fail, set the event id to -1
+               self._currentEventId = kDEFAULT_CURRENT_EVENT_ID;
+               if ([self.delegate respondsToSelector:@selector(IMSEALstartEventLogFail)]){
+                   [self.delegate IMSEALstartEventLogFail];     // TODO: Add error handling here
+               }
+               // TODO: Handle case where selector is not found
+           }
+    };
+    
+    [self createAndRunLogTaskForURL:url andDict:eventDict withCompletionHandler:newAdEventCompletion];
 }
 
 
-
-#pragma mark - Event API calls
 
 - (void) logAdEventLoadedToEventAPI {
     
@@ -229,6 +208,8 @@
         return;
     }
 
+    // TODO: Add logic here
+    
 //    if (!util_checkForExistingEventID()) {
 //        [self helper_logPostEventFailureToListener];
 //        return;
@@ -242,53 +223,113 @@
                                [NSNumber numberWithInt:1], @"type",                                             // Event type
                                [self getCurrentDateString], @"timestamp",                                       // TimeStamp
                                nil];
-    
-    NSURLSessionConfiguration *defaultSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration:defaultSessionConfiguration];
 
     
     // Setup the request with URL
     NSString *remote = [NSString stringWithFormat:@"%@%@%d", kSEALAPIEVENTURL, @"/", self._currentEventId];
     NSURL *url = [NSURL URLWithString: remote];
-    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:adLoadEventDict options:0 error:nil];
-
-    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setHTTPMethod:@"POST"];
-    [urlRequest setHTTPBody:jsonData];
-      
-    NSURLSessionDataTask *dataTask = [defaultSession dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-            NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
+    // Setup completion block
+    void (^adLoadCompletion)(NSData*, NSURLResponse*, NSError*) = ^(NSData *data, NSURLResponse *response, NSError *error){
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+        NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
         
         // If the request was successful (payload is not returned from remote)
         if ([httpResponse statusCode] == 200){
             [self debugLog:[NSString stringWithFormat:@"logAdEventLoadedToEventAPI: %d", self._currentEventId]];
-
                 if ([self.delegate respondsToSelector:@selector(IMSEALrecordEventLogSuccess)]){
                     [self.delegate IMSEALrecordEventLogSuccess];
                 }
-                
+            // TODO: If the delegate doesn't exist, handle
         } else {
-                   // On fail, set the event id to -1
-                   self._currentEventId = kDEFAULT_CURRENT_EVENT_ID;
-                   
-                   // TODO: Add error handling here
-                   
-                   if ([self.delegate respondsToSelector:@selector(IMSEALrecordEventLogFail)]){
-                       [self.delegate IMSEALrecordEventLogFail];
-                   }
-                   
-                   
-                   
-               }
-        }];
-
-      [dataTask resume];
+            // On fail, set the event id to -1
+            self._currentEventId = kDEFAULT_CURRENT_EVENT_ID;
+            // TODO: Add error handling here
+            if ([self.delegate respondsToSelector:@selector(IMSEALrecordEventLogFail)]){
+                [self.delegate IMSEALrecordEventLogFail];
+            }
+            // TODO: If the delegate doesn't exist, handle
+        }
+    };
+    
+    [self createAndRunLogTaskForURL:url andDict:adLoadEventDict withCompletionHandler:adLoadCompletion];
     
 }
 
+
+- (void) logAdEventNoFillToEventAPI {
+    
+    if (!self._isInitialized){
+//        [self helper_logInitFailReason];
+        return;
+    }
+
+    // TODO: Add logic here
+    
+//    if (!util_checkForExistingEventID()) {
+//        [self helper_logPostEventFailureToListener];
+//        return;
+//    }
+
+    
+
+    // Configure dictionary for sending data.
+    NSDictionary *adNoFillEventDict = [[NSDictionary alloc] initWithObjectsAndKeys:
+                               [NSString stringWithFormat:@"%d", self._currentEventId] ,@"session_id",          // Event ID
+                               [NSNumber numberWithInt:2], @"type",                                             // Event type
+                               [self getCurrentDateString], @"timestamp",                                       // TimeStamp
+                               nil];
+
+    
+    // Setup the request with URL
+    NSString *remote = [NSString stringWithFormat:@"%@%@%d", kSEALAPIEVENTURL, @"/", self._currentEventId];
+    NSURL *url = [NSURL URLWithString: remote];
+        
+    // Setup completion block
+    void (^adLoadCompletion)(NSData*, NSURLResponse*, NSError*) = ^(NSData *data, NSURLResponse *response, NSError *error){
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+        NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
+        
+        // If the request was successful (payload is not returned from remote)
+        if ([httpResponse statusCode] == 200){
+            [self debugLog:[NSString stringWithFormat:@"logAdEventNoFillToEventAPI: %d", self._currentEventId]];
+                if ([self.delegate respondsToSelector:@selector(IMSEALrecordEventLogSuccess)]){
+                    [self.delegate IMSEALrecordEventLogSuccess];
+                }
+            // TODO: If the delegate doesn't exist, handle
+        } else {
+            // On fail, set the event id to -1
+            self._currentEventId = kDEFAULT_CURRENT_EVENT_ID;
+            // TODO: Add error handling here
+            if ([self.delegate respondsToSelector:@selector(IMSEALrecordEventLogFail)]){
+                [self.delegate IMSEALrecordEventLogFail];
+            }
+            // TODO: If the delegate doesn't exist, handle
+        }
+    };
+    
+    [self createAndRunLogTaskForURL:url andDict:adNoFillEventDict withCompletionHandler:adLoadCompletion];
+    
+}
+
+
+
+
+- (void) createAndRunLogTaskForURL:(NSURL*)url andDict: (NSDictionary*)postDict withCompletionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))handler {
+    
+    NSURLSessionConfiguration *defaultSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration:defaultSessionConfiguration];
+    
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:postDict options:0 error:nil];
+
+    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setHTTPMethod:@"POST"];
+    [urlRequest setHTTPBody:jsonData];
+    
+    NSURLSessionDataTask *dataTask = [defaultSession dataTaskWithRequest:urlRequest completionHandler:handler];
+    [dataTask resume];
+}
 
 
 - (void)debugLog:(NSString *) string {

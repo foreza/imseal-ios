@@ -37,7 +37,8 @@
 
 - (void)IMSEALstartEventLogSuccess {
     NSLog(@"IMSEALstartEventLogSuccess");
-    [self.imseal recordAdLoaded];
+//    [self.imseal recordAdLoaded];
+    [self.imseal recordAdNoFill];
 }
 
 - (void)IMSEALrecordEventLogFail {
