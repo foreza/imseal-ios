@@ -13,7 +13,7 @@ target 'imseal-testapp' do
 
   # Pods for imseal-testapp
   
-  pod 'IMSeal', :path => './'
+  pod 'IMSeal', :git => 'https://github.com/foreza/imseal-ios'
   
   post_install do |installer|
     installer.pods_project.targets.each do |target|

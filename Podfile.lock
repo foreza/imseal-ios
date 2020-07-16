@@ -2,15 +2,20 @@ PODS:
   - IMSeal (0.0.1)
 
 DEPENDENCIES:
-  - IMSeal (from `./`)
+  - IMSeal (from `https://github.com/foreza/imseal-ios`)
 
 EXTERNAL SOURCES:
   IMSeal:
-    :path: "./"
+    :git: https://github.com/foreza/imseal-ios
+
+CHECKOUT OPTIONS:
+  IMSeal:
+    :commit: 3c143ddc5d3133c32e209a4dfa8d4b1499dfece2
+    :git: https://github.com/foreza/imseal-ios
 
 SPEC CHECKSUMS:
-  IMSeal: 8e88836a501a99a2123d7181cd968460d223cd54
+  IMSeal: 49386089d8fafb859f599bdae11511b39b4487c9
 
-PODFILE CHECKSUM: b2f585a1bd0eafd9e46c4f3ce74034768fb4b661
+PODFILE CHECKSUM: f66f503d977799e93c8d5b2f7dc88a1fa0ff25fb
 
 COCOAPODS: 1.5.3
